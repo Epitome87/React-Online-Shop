@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Card, Col, Container, Divider, Grid, Image, Row, Text } from '@nextui-org/react';
-import products from '../products';
+import axios from 'axios';
 
 function Product() {
-  const params = useParams();
-  const productID = params.id;
+  const [product, setProduct] = useState({});
+  const { id : productID } = useParams();
 
-  const product = products.find((product) => product._id === productID);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      const { data } = await axios.get(`/api/products/${productID}`);
+      setProduct(data);
+    }
+
+    fetchProduct();
+  }, []);
 
   return (
     <Container>

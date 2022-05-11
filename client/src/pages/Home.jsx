@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Container, Grid, Row, Text } from '@nextui-org/react';
-import products from '../products';
+import axios from 'axios';
 import ProductPreview from '../components/ProductPreview';
 
 /* Home Screen
@@ -8,6 +8,17 @@ This screen will be a mini-landing page of sorts. The latest products and the to
 Some information about the site will also be provided, and perhaps a nice (but small) hero section.
 */
 function Home() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data } = await axios.get(`/api/products`);
+      setProducts(data);
+    }
+
+    fetchProducts();
+  }, []);
+
   return (
     <main>
       <Container>
