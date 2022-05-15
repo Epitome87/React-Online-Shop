@@ -1,4 +1,5 @@
 import express from 'express';
+import morgan from 'morgan';
 import 'dotenv/config';
 import userRouter from './routers/userRouter.js';
 import productRouter from './routers/productRouter.js';
@@ -8,6 +9,11 @@ connectDatabase();
 
 const port = process.env.PORT || 5000;
 const app = express();
+
+// In only dev mode, let morgan log info on routes hit
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // To parse the incoming requests with strings or arrays
 // app.use(express.urlencoded({ extended: true }));
