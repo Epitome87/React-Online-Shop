@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { reviewModel } from './reviewModel.js';
 
 const productSchema = mongoose.Schema(
   {
@@ -11,7 +12,7 @@ const productSchema = mongoose.Schema(
       required: true,
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
       default: 0,
     },
@@ -39,6 +40,7 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 0,
     },
+    reviews: [reviewModel],
   },
   { timestamps: true }
 );
