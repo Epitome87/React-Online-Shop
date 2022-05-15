@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import validator from 'validator';
-import users from '../users.js';
 
 const userSchema = mongoose.Schema(
   {
@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minLength: 5,
     },
     email: {
       type: String,
@@ -37,16 +38,27 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    token: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-// Helper object instance method for comparing passwords
-// TODO: This isn't working -- probably can't use from within this file?
-userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+// This func is available on an instance of a Model
+userSchema.methods.generateAuthToken = async function () {
+  const user = this;
+
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+  // user.tokens = user.tokens.concat({ token });
+  user.token = token;
+  await user.save();
+
+  return token;
 };
 
 // This static function is available on the Model itself
@@ -69,6 +81,21 @@ userSchema.statics.findByCredentials = async (email, password) => {
   // Everything went smoothly -- respond with the User object
   return user;
 };
+
+// Hash the plain-text password pre-save
+// Note we don't use arrow function since it won't bind 'this' to our User
+userSchema.pre('save', async function (next) {
+  const modifiedUser = this;
+
+  // If password wasn't modified, no need to hash it (in fact we'd be hashing a hash, most likely!)
+  if (modifiedUser.isModified('password')) {
+    const numberOfSaltRounds = 8;
+    modifiedUser.password = await bcrypt.hash(modifiedUser.password, numberOfSaltRounds);
+  }
+
+  // This is treated as middleware -- move onto the next one!
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 
