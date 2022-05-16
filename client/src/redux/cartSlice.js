@@ -44,7 +44,6 @@ const cartSlice = createSlice({
 
       .addCase(addToCart.fulfilled, (state, action) => {
         state.status = 'success';
-        console.log('Setting cart to', action.payload);
 
         // TODO: Do we want all of a Product's properties?
 

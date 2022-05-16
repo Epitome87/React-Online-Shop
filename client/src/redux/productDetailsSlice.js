@@ -2,13 +2,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const fetchProductDetails = createAsyncThunk('productDetails/fetchProductDetails', async (id, thunkAPI) => {
+  console.log('FETCHING PRODUCT DETAILS');
   const { data } = await axios.get(`/api/products/${id}`);
 
   return data;
 });
 
 const initialState = {
-  product: {},
+  product: {}, // TODO: Should this be null instead? Which is more preferable?
   status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
@@ -25,7 +26,6 @@ export const productDetailsSlice = createSlice({
 
       .addCase(fetchProductDetails.fulfilled, (state, action) => {
         state.status = 'success';
-        console.log('Setting product to', action.payload);
         state.product = action.payload;
       })
 
@@ -39,7 +39,7 @@ export const productDetailsSlice = createSlice({
 
 // Selectors
 export const selectProductDetails = (state) => state.productDetails.product;
-export const getProductDetailsStatus = (state) => state.productDetails.status;
-export const getProductDetailsError = (state) => state.productDetails.error;
+export const selectProductDetailsStatus = (state) => state.productDetails.status;
+export const selectProductDetailsError = (state) => state.productDetails.error;
 
 export default productDetailsSlice.reducer;
