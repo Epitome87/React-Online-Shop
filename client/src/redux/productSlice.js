@@ -7,24 +7,48 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async (d
   return data;
 });
 
-export const addProduct = createAsyncThunk('products/addProduct', async (initialProduct) => {
-  const { data } = await axios.post(`/api/products`, initialProduct);
+export const createProduct = createAsyncThunk('products/createProduct', async ({ authToken, product }) => {
+  // TODO: Where do I retrieve this from -- can it be done inside this slice without passing it as argument?
+  const axiosConfig = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
+
+  const { data } = await axios.post(`/api/products`, product, axiosConfig);
+
   return data;
 });
 
 export const updateProduct = createAsyncThunk('products/updateProduct', async (initialProduct) => {
-  const { id } = initialProduct;
+  const { _id } = initialProduct;
 
-  const { data } = await axios.put(`/api/products/${id}`, initialProduct);
+  // TODO: Do we want to allow editing of _id? Probably not? So let's remove it for now
+  delete initialProduct._id;
+  const { data } = await axios.put(`/api/products/${_id}`, initialProduct);
+
   return data;
 });
 
-export const deleteProduct = createAsyncThunk('products/deleteProduct', async (initialProduct) => {
-  const { id } = initialProduct;
+export const deleteProduct = createAsyncThunk('products/deleteProduct', async ({ authToken, product }) => {
+  const { _id: id } = product;
 
-  const response = await axios.delete(`/api/products`);
+  // TODO: Where do I retrieve this from -- can it be done inside this slice without passing it as argument?
+  const axiosConfig = {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+    },
+  };
 
-  if (response && response.status === 200) return initialProduct;
+  console.log('Attempting to delete product with ID, with Auth, with Product', id, authToken, product);
+
+  const response = await axios.delete(`/api/products/${id}`, axiosConfig);
+
+  console.log('DELETE PRODUCT RESPONSE', response);
+
+  if (response && response.status === 200) return product;
 
   return `${response.status}: ${response.statusText}`;
 });
@@ -63,14 +87,13 @@ export const productsSlice = createSlice({
         // state.error = error.response && error.response.data.message ? error.response.data.message : error.message;
       })
 
-      .addCase(addProduct.fulfilled, (state, action) => {
+      // Create Product
+      .addCase(createProduct.fulfilled, (state, action) => {
         state.products.push(action.payload);
       })
 
       .addCase(updateProduct.fulfilled, (state, action) => {
         if (!action.payload.id) {
-          console.log('Update could not complete');
-          console.log(action.payload);
           return;
         }
         state.products.push(action.payload);
@@ -78,8 +101,6 @@ export const productsSlice = createSlice({
 
       .addCase(deleteProduct.fulfilled, (state, action) => {
         if (!action.payload.id) {
-          console.log('Delete could not complete');
-          console.log(action.payload);
           return;
         }
         const { id } = action.payload;
