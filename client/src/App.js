@@ -5,7 +5,19 @@ import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 // Import our Page components and Layout components
-import { FAQ, Home, Login, Product, Profile, Registration, ShoppingCart } from './pages';
+import {
+  FAQ,
+  Home,
+  Login,
+  Product,
+  ProductEdit,
+  Products,
+  Profile,
+  Registration,
+  ShoppingCart,
+  UserEdit,
+  Users,
+} from './pages';
 import { Footer, Header } from './components/layout';
 
 // Import our Reducers
@@ -46,6 +58,11 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/registration' element={<Registration />} />
             <Route path='/profile' element={<Profile />} />
+            <Route path='/admin/orders' element={<p>Come back soon!</p>} />
+            <Route path='/products' element={<Products />} />
+            <Route path='/admin/products/:id' element={<ProductEdit />} />
+            <Route path='/admin/users' element={<Users />} />
+            <Route path='/admin/users/:id' element={<UserEdit />} />
           </Routes>
           <Footer />
         </Router>
