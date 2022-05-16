@@ -39,3 +39,12 @@ export const auth = async (req, res, next) => {
     res.status(401).send({ error: 'Please authenticate' });
   }
 };
+
+export const isAdmin = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    res.status(401);
+    throw new Error('Admin required for this action');
+  }
+};

@@ -86,6 +86,90 @@ export const updateUserProfile = async (req, res) => {
 
     res.status(200).send(req.user);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).send(error.message);
+  }
+};
+
+// GET /api/users
+// Auth / Admin required
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+};
+
+// GET /api/users/:id
+// Auth / Admin required
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+
+    if (user) {
+      res.send(user);
+    } else {
+      res.status(404);
+      throw new Error('Failed to retrieve User');
+    }
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+};
+
+// PUT /api/users/:id
+// Auth / Admin required
+export const updateUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      const propertiesToUpdate = Object.keys(req.body);
+      const allowedUpdates = ['name', 'email', 'isAdmin'];
+      const isValidOperation = propertiesToUpdate.every((update) => allowedUpdates.includes(update));
+
+      if (!isValidOperation) {
+        return res.status(400).send({ error: 'Invalid User updates ' });
+      }
+
+      for (const update of propertiesToUpdate) {
+        user[update] = req.body[update];
+      }
+
+      // Remember: Password is encrypted pre-save by our User Schema!
+      await user.save();
+
+      // We don't want to return all User data back...
+      res.status(200).send({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      });
+    } else {
+      res.status(404);
+      throw new Error('Failed to retrieve User');
+    }
+  } catch (error) {
+    res.status(404).send(error.message);
+  }
+};
+
+// DELETE /api/users/:id
+// Auth / Admin required
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+      await user.remove();
+      res.send({ message: 'User successfully removed' });
+    } else {
+      res.status(400);
+      throw new Error(`User with that ID not found`);
+    }
+  } catch (error) {
+    res.send(error.message);
   }
 };
