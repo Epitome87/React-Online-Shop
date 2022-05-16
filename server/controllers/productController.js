@@ -27,11 +27,21 @@ export const getProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   const propertiesToUpdate = Object.keys(req.body);
-  const allowedUpdates = ['name', 'price', 'description', 'image', 'category', 'numberInStock'];
+  const allowedUpdates = [
+    'name',
+    'description',
+    'price',
+    'image',
+    'category',
+    'averageRating',
+    'numberOfRatings',
+    'numberOfStock',
+    'reviews',
+  ];
   const isValidOperation = propertiesToUpdate.every((update) => allowedUpdates.includes(update));
 
   if (!isValidOperation) {
-    return res.status(400).send({ error: 'Invalid Product updates ' });
+    return res.status(400).send({ error: 'Invalid Product updates' });
   }
 
   try {
@@ -43,9 +53,59 @@ export const updateProduct = async (req, res) => {
 
     await product.save();
 
-    res.status(200).send(req.user);
+    res.status(200).send(product);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(404).send(error);
+  }
+};
+
+// POST /api/products/:id
+// Auth / Admin required
+export const createProduct = async (req, res) => {
+  const { name, description, price, image, category, averageRating, numberOfRatings, numberOfStock, reviews } =
+    req.body;
+
+  // TODO: Look up benefits / cons of creating an Object rather than just passing these directly into Product.create
+  const product = new Product({
+    user: req.user._id,
+    name,
+    description,
+    price,
+    image,
+    category,
+    averageRating,
+    numberOfRatings,
+    numberOfStock,
+    reviews,
+  });
+
+  try {
+    const createdProduct = await Product.create(product);
+
+    // Everything went smooth creating the Product...
+    if (createdProduct) {
+      res.status(201).json(createdProduct);
+    } else {
+      throw new Error('Error attempting to create Product');
+    }
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+// GET /api/products/:id
+// Auth / Admin required
+export const deleteProduct = async (req, res) => {
+  try {
+    const productToDelete = await Product.findById(req.params.id);
+
+    if (productToDelete) {
+      await productToDelete.remove();
+
+      res.status(200).send({ product: productToDelete, message: 'Product successfully removed' });
+    }
+  } catch (error) {
+    res.status(404).send({ message: 'Product not found -- could not remove' });
   }
 };
 
