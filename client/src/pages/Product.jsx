@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Card, Col, Container, Divider, Grid, Image, Row, Text } from '@nextui-org/react';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import productDetailsReducer from '../redux/productDetailsSlice';
 import {
   fetchProductDetails,
-  getProductDetailsStatus,
-  getProductDetailsError,
+  selectProductDetailsStatus,
+  selectProductDetailsError,
   selectProductDetails,
 } from '../redux/productDetailsSlice';
 
@@ -18,8 +16,8 @@ function Product() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const product = useSelector(selectProductDetails);
-  const status = useSelector(getProductDetailsStatus);
-  const error = useSelector(getProductDetailsError);
+  const status = useSelector(selectProductDetailsStatus);
+  const error = useSelector(selectProductDetailsError);
 
   useEffect(() => {
     dispatch(fetchProductDetails(productID));
