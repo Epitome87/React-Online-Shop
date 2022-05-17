@@ -1,9 +1,10 @@
 import express from 'express';
 import morgan from 'morgan';
 import 'dotenv/config';
+import connectDatabase from './database/mongooseConfiguration.js';
 import userRouter from './routers/userRouter.js';
 import productRouter from './routers/productRouter.js';
-import connectDatabase from './database/mongooseConfiguration.js';
+import orderRouter from './routers/orderRouter.js';
 
 connectDatabase();
 
@@ -23,5 +24,6 @@ app.use(express.json());
 
 app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
+app.use('/api/orders', orderRouter);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
