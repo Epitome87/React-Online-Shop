@@ -8,11 +8,14 @@ const orderSchema = mongoose.Schema(
       required: true,
       ref: 'User',
     },
-    // List of  products that make up this Order
+    // List of items that make up this Order
     items: {
       type: [
         {
+          // Reference to the Product itself
           product: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Product' },
+          // It may seem redundant to store name, image, price if they can be found within the product field above...
+          // ...but the Product can always change over time! Especially the price.
           name: { type: String, required: true },
           quantity: { type: Number, required: true },
           image: { type: String, required: true },
@@ -30,6 +33,18 @@ const orderSchema = mongoose.Schema(
       type: Number,
       required: true,
       default: 0,
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    isShipped: {
+      type: Boolean,
+      default: false,
+    },
+    isDelivered: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
