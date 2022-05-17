@@ -1,10 +1,10 @@
-import users from '../users.js';
-import products from '../products.js';
+import users from './users.js';
+import products from './products.js';
+import orders from './orders.js';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import 'dotenv/config';
-import mongoose from 'mongoose';
 import connectDatabase from './mongooseConfiguration.js';
 
 connectDatabase();
@@ -49,8 +49,21 @@ const deleteData = async () => {
   }
 };
 
-if (process.argv[2] === '-d') {
-  deleteData();
-} else {
-  seedData();
-}
+// if (process.argv[2] === '-d') {
+//   deleteData();
+// } else {
+//   seedData();
+// }
+
+const seedOrders = async () => {
+  try {
+    await Order.insertMany(orders);
+
+    process.exit();
+  } catch (error) {
+    console.error(`${error}`);
+    process.exit(1);
+  }
+};
+
+seedOrders();
