@@ -1,6 +1,7 @@
 export { default as FAQ } from './FAQ';
 export { default as Home } from './Home';
 export { default as Login } from './Login';
+export { default as Orders } from './Orders';
 export { default as Product } from './Product';
 export { default as ProductEdit } from './ProductEdit';
 export { default as Products } from './Products';
