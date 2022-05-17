@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { Card, Container, Grid, Row, Text } from '@nextui-org/react';
 
-function ProductPreview({ id, name, description, image, price, averageRating, numberOfReviews }) {
+function ProductPreview({ id, name, image, price, averageRating, numberOfReviews }) {
   return (
     <Card hoverable clickable>
       <Link to={`/products/${id}`}>
@@ -26,7 +26,7 @@ function ProductPreview({ id, name, description, image, price, averageRating, nu
 ProductPreview.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  // description: PropTypes.string.isRequired,
   image: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   averageRating: PropTypes.number.isRequired,

@@ -12,17 +12,13 @@ function ShoppingCart() {
   const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
 
-  console.log('CART ID', productID);
-
   useEffect(() => {
-    console.log('cart effect');
     if (productID) {
       dispatch(addToCart({ productID, quantity }));
     }
   }, [dispatch, productID, quantity]);
 
   const removeFromCartHandler = (id) => {
-    console.log('Removing from cart', id);
     dispatch(removeFromCart(id));
   };
 
@@ -66,7 +62,6 @@ function ShoppingCart() {
                   id=''
                   value={cartItem.quantity}
                   onChange={(event) => {
-                    console.log('Changing quantity to', Number(event.target.value));
                     dispatch(addToCart({ productID: cartItem._id, quantity: Number(event.target.value) }));
                   }}
                 >

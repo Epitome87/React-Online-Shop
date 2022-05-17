@@ -9,6 +9,7 @@ import {
   FAQ,
   Home,
   Login,
+  Orders,
   Product,
   ProductEdit,
   Products,
@@ -63,6 +64,7 @@ function App() {
             <Route path='/admin/products/:id' element={<ProductEdit />} />
             <Route path='/admin/users' element={<Users />} />
             <Route path='/admin/users/:id' element={<UserEdit />} />
+            <Route path='/admin/orders' element={<Orders />} />
           </Routes>
           <Footer />
         </Router>

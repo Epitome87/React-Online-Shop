@@ -17,7 +17,6 @@ function Home() {
 
   useEffect(() => {
     if (productStatus === 'idle') {
-      console.log('Dispatching fetch products');
       dispatch(fetchProducts());
     }
   }, [productStatus, dispatch]);
