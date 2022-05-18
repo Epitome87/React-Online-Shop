@@ -1,28 +1,25 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import ordersServices from '../services/ordersServices';
 
 const initialState = {
   orders: [],
 };
 
-export const fetchAllOrders = createAsyncThunk('orders/fetchAllOrders', async ({ authToken }, thunkAPI) => {
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
-  };
-
-  const { data } = await axios.get(`/api/orders`, axiosConfig);
-
-  return data;
+export const fetchAllOrders = createAsyncThunk('orders/fetchAllOrders', async (authToken, thunkAPI) => {
+  return await ordersServices.getAllOrders(authToken);
 });
 
 export const createOrder = createAsyncThunk('orders/createOrder', async ({ authToken }, thunkAPI) => {
+  // TODO: Create via API call
   // Once Order is made, we don't want to store our cart items locally
   localStorage.removeItem('cartItems');
 });
 
-const cartSlice = createSlice({
+export const deleteOrder = createAsyncThunk('orders/deleteOrder', async ({ authToken }, thunkAPI) => {
+  return await ordersServices.getAllOrders(authToken);
+});
+
+const orderSlice = createSlice({
   name: 'orders',
   initialState,
   reducers: {
@@ -48,11 +45,11 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addItem, resetOwnOrder } = cartSlice.actions;
+export const { resetOwnOrder } = orderSlice.actions;
 
 // Selectors
-export const selectAllOrders = (state) => state.cart.cartItems;
-export const getCartStatus = (state) => state.cart.status;
-export const getCartError = (state) => state.cart.error;
+export const selectAllOrders = (state) => state.orders.orders;
+export const getOrderStatus = (state) => state.orders.status;
+export const getOrderError = (state) => state.orders.error;
 
-export default cartSlice.reducer;
+export default orderSlice.reducer;

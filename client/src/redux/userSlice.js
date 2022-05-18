@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import ordersServices from '../services/ordersServices';
 
 const initialState = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
@@ -8,60 +8,19 @@ const initialState = {
 };
 
 export const login = createAsyncThunk('user/login', async ({ email, password }, thunkAPI) => {
-  const axiosConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  const { data } = await axios.post(`/api/users/login`, { email, password }, axiosConfig);
-
-  // TODO: Do we need to payload all of User's properties?!
-  //   At the moment our data is: { user: { etc}, token: ""}
-  return { ...data.user };
+  return await ordersServices.login(email, password);
 });
 
 export const register = createAsyncThunk('user/register', async ({ email, name, password }, thunkAPI) => {
-  const axiosConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
-  const { data } = await axios.post(`/api/users`, { email, name, password }, axiosConfig);
-
-  // Data holds User information like email, name, password, ._id, and their Auth Token
-  return { ...data };
+  return await ordersServices.register(email, name, password);
 });
 
-export const getProfile = createAsyncThunk('user/profile', async (id, thunkAPI) => {
-  const userToken = '';
-  const axiosConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${userToken}`,
-    },
-  };
-
-  // Id could be a User._id or 'profile' (self)
-  const { data } = await axios.get(`/api/users/${id}`, axiosConfig);
-
-  // Data holds User information like email, name, password, ._id, and their Auth Token
-  return { ...data };
+export const getProfile = createAsyncThunk('user/profile', async (authToken, userID, thunkAPI) => {
+  return await ordersServices.getProfile(authToken, userID);
 });
 
-export const updateUser = createAsyncThunk('user/update', async ({ email, name, password, token }, thunkAPI) => {
-  const axiosConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const { data } = await axios.put(`/api/users/profile`, { email, name, password }, axiosConfig);
-
-  // Data holds User information like email, name, password, ._id, and their Auth Token
-  return { ...data };
+export const updateUser = createAsyncThunk('user/update', async ({ email, name, password, authToken }, thunkAPI) => {
+  ordersServices.updateUser({ authToken, email, name, password });
 });
 
 const userSlice = createSlice({

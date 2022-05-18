@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
+import productsServices from '../services/productsServices';
 
 export const fetchProducts = createAsyncThunk('products/fetchProducts', async (dispatch, getState) => {
-  const { data } = await axios.get(`/api/products`);
-
-  return data;
+  return await productsServices.getAllProducts();
 });
 
 export const createProduct = createAsyncThunk('products/createProduct', async ({ authToken, product }) => {
@@ -16,41 +14,15 @@ export const createProduct = createAsyncThunk('products/createProduct', async ({
     },
   };
 
-  const { data } = await axios.post(`/api/products`, product, axiosConfig);
-
-  return data;
+  return await productsServices.createProduct(authToken, product);
 });
 
 export const updateProduct = createAsyncThunk('products/updateProduct', async (initialProduct) => {
-  const { _id } = initialProduct;
-
-  // TODO: Do we want to allow editing of _id? Probably not? So let's remove it for now
-  delete initialProduct._id;
-  const { data } = await axios.put(`/api/products/${_id}`, initialProduct);
-
-  return data;
+  return await productsServices.updateProductByID(initialProduct);
 });
 
 export const deleteProduct = createAsyncThunk('products/deleteProduct', async ({ authToken, product }) => {
-  const { _id: id } = product;
-
-  // TODO: Where do I retrieve this from -- can it be done inside this slice without passing it as argument?
-  const axiosConfig = {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${authToken}`,
-    },
-  };
-
-  console.log('Attempting to delete product with ID, with Auth, with Product', id, authToken, product);
-
-  const response = await axios.delete(`/api/products/${id}`, axiosConfig);
-
-  console.log('DELETE PRODUCT RESPONSE', response);
-
-  if (response && response.status === 200) return product;
-
-  return `${response.status}: ${response.statusText}`;
+  return await productsServices.deleteProduct(authToken, product);
 });
 
 const initialState = {
